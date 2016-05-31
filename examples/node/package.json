@@ -1,13 +1,17 @@
 {
   "name": "fadecandy-examples-node",
   "devDependencies": {
-    "coffee": "~0.0.1"
+    "coffee": "~3.2.1"
   },
   "dependencies": {
+    "canvas": "^1.3.16",
     "flags": "~0.1.1",
-    "midi": "~0.8.1",
+    "midi": "file:../../../node-midi",
     "minimist": "~0.0.8",
-    "simplex-noise": "~2.1.1"
+    "nan": "~2.2.1",
+    "node-core-audio": "file:../../../node-core-audio",
+    "simplex-noise": "~2.1.1",
+    "tinycolor2": "^1.3.0"
   },
   "private": true
 }

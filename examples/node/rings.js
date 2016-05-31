@@ -15,6 +15,7 @@ var simplex = new SimplexNoise(Math.random);
 var OPC = new require('./opc');
 var model = OPC.loadModel(process.argv[2] || '../layouts/grid32x16z.json');
 var client = new OPC('localhost', 7890);
+var leapjs = require('leapjs');
 
 var noiseScale = 0.02;
 var speed = 0.002;
@@ -24,6 +25,10 @@ var ringScale = 3.0;
 var wanderSpeed = 0.00005;
 var dx = 0, dz = 0, dw = 0;
 
+
+var r_base = 0;
+var amp_base = 0.5;
+
 var min = Math.min;
 var max = Math.max;
 var sin = Math.sin;
@@ -31,12 +36,81 @@ var cos = Math.cos;
 var pow = Math.pow;
 var sqrt = Math.sqrt;
 
+var controller  = new leapjs.Controller({enableGestures: true});
+controller.on('connect', function() {
+  console.log("Successfully connected.");
+});
+
+controller.on('deviceConnected', function() {
+  console.log("A Leap device has been connected.");
+});
+
+controller.on('deviceDisconnected', function() {
+  console.log("A Leap device has been disconnected.");
+});
+
+controller.connect();
+
+
+controller.on('deviceFrame', function(frame) {
+  // loop through available gestures
+  for(var i = 0; i < frame.gestures.length; i++){
+    var gesture = frame.gestures[i];
+    var type    = gesture.type;
+
+    switch( type ){
+
+      case "circle":
+        if (gesture.state == "stop") {
+          console.log('circle');
+        }
+        break;
+
+      case "swipe":
+        if (gesture.state == "stop") {
+          console.log('swipe');
+        }
+        break;
+
+      case "screenTap":
+        if (gesture.state == "stop") {
+          console.log('screenTap');
+        }
+        break;
+
+      case "keyTap":
+        if (gesture.state == "stop") {
+          console.log('keyTap');
+        }
+        break;
+
+      }
+    }
+    var str=""
+    for (var i in frame.handsMap) {
+        
+          dx= frame.handsMap[i].roll();
+          dz= frame.handsMap[i].pitch();
+                    dw= frame.handsMap[i].yaw();
+
+          console.log(frame.handsMap[i].roll())
+          //yaw
+
+
+        }
+
+
+});
+
+
 function fractalNoise(x, y, z, w)
 {
     // 4D fractal noise (fractional brownian motion)
 
-    var r = 0;
-    var amp = 0.5;
+    var r = r_base;
+    var amp = amp_base;
+    //console.log(r)
+    //console.log(amp)
     for (var octave = 0; octave < 4; octave++) {
         r += (simplex.noise4D(x, y, z, w) + 1) * amp;
         amp /= 2;
@@ -114,4 +188,4 @@ function draw()
     client.mapPixels(shader, model);
 }
 
-setInterval(draw, 10);
+setInterval(draw, 0.1);
